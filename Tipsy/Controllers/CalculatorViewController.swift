@@ -18,8 +18,10 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var splitNumberLabel: UILabel!
     
  
-    var pctNum: Double?
-    var splitNum: Int?
+    var pctNum = 10.00
+    var splitNum = 2
+    var splittedValue = 0.0
+    
     //IBActions for all inputs
     
     //IBAction for the tip buttons
@@ -35,6 +37,8 @@ class CalculatorViewController: UIViewController {
         
         //Turn the value into a decimal
         pctNum = (pctStr as NSString).doubleValue / 100
+ 
+        //Remove keyboard on click of tip
         billTextField.endEditing(true)
     }
     
@@ -45,21 +49,33 @@ class CalculatorViewController: UIViewController {
         splitNum = Int(sender.value)
         
         //Set the label = to the value
-        splitNumberLabel.text = String(splitNum!)
+        splitNumberLabel.text = String(splitNum)
     }
     
     //IBAction for calculate button
     @IBAction func calculatePressed(_ sender: UIButton) {
         
-        //Get the ammount
-        let totalBill = billTextField.text
+        //Get the ammount if empty set it to 0.0
+        let totalBill = billTextField.text!
         
         //Turn string into a Double for the equation
-        let totalNum = (totalBill! as NSString).doubleValue
+        let totalNum = (totalBill as NSString).doubleValue
     billTextField.endEditing(true)
         
+        
+        
         //Calculate precentage and split then turn it in a Float
-        let totalForEach = Float(((pctNum! * totalNum) + totalNum) / Double(splitNum!))
+        splittedValue = ((pctNum * totalNum) + totalNum) / Double(splitNum)
+        
+        //After creating the segue, now here we tell where to go after click on link
+        self.performSegue(withIdentifier: "goToResults", sender: self)
+        
+        //TESTING
+        print("Testing Total \(splittedValue)")
+        print("Testing Split Num \(splitNum)")
+        print("Testing PCT \(pctNum)")
+        //TESTING
+        
     }
     
     //Clear all the tip buttons before activating   one
@@ -68,6 +84,26 @@ class CalculatorViewController: UIViewController {
         tenPctButton.isSelected = false
         twentyPctButton.isSelected = false
     }
+    
+    
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+        if segue.identifier == "goToResults"{
+            //Set a variable equal to the destination which is the name of the 2nd controller
+            let desctinationVC = segue.destination as! ResultsViewController
+            
+            //Getting the splittedValue and to be equal to the totalValue in the 2nd view
+            desctinationVC.totalValue = splittedValue
+            desctinationVC.numOfPeople = splitNum
+            desctinationVC.pctNum = pctNum
+        }
+    }
+    
+    
     
 }
 
