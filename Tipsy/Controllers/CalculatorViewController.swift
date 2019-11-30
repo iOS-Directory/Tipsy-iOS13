@@ -17,12 +17,12 @@ class CalculatorViewController: UIViewController {
     @IBOutlet weak var twentyPctButton: UIButton!
     @IBOutlet weak var splitNumberLabel: UILabel!
     
+    //Create an instance of CalculatorBrain for methods
+    var calBrain = CalculatorBrain()
  
-    var pctNum = 10.00
+    var pctNum = 0.1
     var splitNum = 2
     var splittedValue = 0.0
-    
-    //IBActions for all inputs
     
     //IBAction for the tip buttons
     @IBAction func tipChanged(_ sender: UIButton) {
@@ -31,12 +31,9 @@ class CalculatorViewController: UIViewController {
         
         //Set the pressed button to active
         sender.isSelected = true
-        
-        //Get the value of the button
-        let pctStr =  sender.currentTitle!
-        
+
         //Turn the value into a decimal
-        pctNum = (pctStr as NSString).doubleValue / 100
+        pctNum =  calBrain.getPCTNum(sender.currentTitle!)
  
         //Remove keyboard on click of tip
         billTextField.endEditing(true)
@@ -46,35 +43,25 @@ class CalculatorViewController: UIViewController {
     //IBAction for the split button -+
     @IBAction func stepperValueChanged(_ sender: UIStepper) {
         //get value and turn it into an Int
-        splitNum = Int(sender.value)
+        splitNum = calBrain.getSplitValue(sender.value)
         
         //Set the label = to the value
         splitNumberLabel.text = String(splitNum)
     }
     
+    
     //IBAction for calculate button
     @IBAction func calculatePressed(_ sender: UIButton) {
         
-        //Get the ammount if empty set it to 0.0
+        //Get the ammount
         let totalBill = billTextField.text!
-        
-        //Turn string into a Double for the equation
-        let totalNum = (totalBill as NSString).doubleValue
-    billTextField.endEditing(true)
-        
-        
-        
+
         //Calculate precentage and split then turn it in a Float
-        splittedValue = ((pctNum * totalNum) + totalNum) / Double(splitNum)
+        splittedValue = calBrain.getSplitedTotal(totalBill, pctNum, splitNum)
         
         //After creating the segue, now here we tell where to go after click on link
         self.performSegue(withIdentifier: "goToResults", sender: self)
-        
-        //TESTING
-        print("Testing Total \(splittedValue)")
-        print("Testing Split Num \(splitNum)")
-        print("Testing PCT \(pctNum)")
-        //TESTING
+
         
     }
     
